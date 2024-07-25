@@ -60,27 +60,27 @@ solon.logging.appender:
 # 2.0.3新增
 # 连接方式管理, {HOST},{PORT},{DB_NAME} 表示占位符
 connect:
-  "1":
+  1:
     name: MySQL
     driver: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://{HOST}:{PORT}/{DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     serviceName: com.gitee.gen.gen.mysql.MySqlService
-  "2":
+  2:
     name: Oracle
     driver: oracle.jdbc.driver.OracleDriver
     url: jdbc:oracle:thin:@{HOST}:{PORT}{DB_NAME}
     serviceName: com.gitee.gen.gen.oracle.OracleService
-  "3":
+  3:
     name: "SQL Server"
     driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://{HOST}:{PORT};DatabaseName={DB_NAME};trustServerCertificate=true
     serviceName: com.gitee.gen.gen.sqlserver.SqlServerService
-  "4":
+  4:
     name: PostgreSQL
     driver: org.postgresql.Driver
     url: jdbc:postgresql://{HOST}:{PORT}/{DB_NAME}
     serviceName: com.gitee.gen.gen.postgresql.PostgreSqlService
-  "5":
+  5:
     name: "达梦"
     driver: dm.jdbc.driver.DmDriver
     url: jdbc:dm://{HOST}:{PORT}/{DB_NAME}
