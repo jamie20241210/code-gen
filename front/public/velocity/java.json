@@ -167,6 +167,10 @@
         {
           "expression": "${table.schema}",
           "text": "PostgreSQL中的Schema"
+        },
+        {
+          "expression": "${table.columnCount}",
+          "text": "字段数量"
         }
       ]
     },

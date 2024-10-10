@@ -1,5 +1,9 @@
 # changelog
 
+## 2.0.5
+
+- 新增`${table.columnCount}`变量,返回表字段数量
+
 ## 2.0.4
 
 - 使用jdkhttp
