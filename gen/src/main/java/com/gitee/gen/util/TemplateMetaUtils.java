@@ -31,11 +31,46 @@ public final class TemplateMetaUtils {
      * 解析元数据信息
      */
     public static Map<String, String> parseMetaRow(String row) {
+        char[] charArray = row.toCharArray();
+
         Map<String, String> data = new HashMap<>();
-        String[] paris = row.split("\\s*,\\s*");
-        for (String item : paris) {
-            String[] kv = item.split("=");
-            data.put(kv[0].trim(), kv.length == 1 ? null : kv[1].trim());
+
+        StringBuilder kvBuilder = new StringBuilder();
+        // 剩余未闭合表达式数量
+        int leftExpr = 0;
+        for (int i = 0, len = charArray.length, end = len - 1; i < len; i++) {
+            char c = charArray[i];
+            boolean kvEnd = false;
+            if (i == end) {
+                kvBuilder.append(c);
+                kvEnd = true;
+            } else if (',' == c && leftExpr == 0) {
+                kvEnd = true;
+            }
+
+            if (kvEnd) {
+                String[] kv = kvBuilder.toString().trim().split("=");
+                data.put(kv[0].trim(), kv.length == 1 ? null : kv[1].trim());
+                kvBuilder = new StringBuilder();
+                continue;
+            }
+
+            kvBuilder.append(c);
+            switch (c) {
+                case '{':
+                case '(':
+                    leftExpr++;
+                    break;
+                case '}':
+                case ')':
+                    leftExpr--;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (leftExpr > 0) {
+            throw new RuntimeException("读取元数据失败,有" + leftExpr + "个表达式未闭合");
         }
         return data;
     }
