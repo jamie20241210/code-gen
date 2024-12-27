@@ -3,6 +3,7 @@
 ## 2.0.6
 
 - 优化导入模板元数据解析 [pr](https://gitee.com/durcframework/code-gen/pulls/36)
+- 修复 postgresql-table多模式相同表重复数据问题 [https://gitee.com/durcframework/code-gen/pulls/35/files](https://gitee.com/durcframework/code-gen/pulls/35/files)
 
 ## 2.0.5
 
