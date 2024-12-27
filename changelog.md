@@ -1,5 +1,9 @@
 # changelog
 
+## 2.0.6
+
+- 优化导入模板元数据解析 [pr](https://gitee.com/durcframework/code-gen/pulls/36)
+
 ## 2.0.5
 
 - 新增`${table.columnCount}`变量,返回表字段数量
