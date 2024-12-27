@@ -58,6 +58,20 @@ public class SQLContext {
         this.javaPkColumn = this.tableDefinition.getPkColumn();
     }
 
+    public String getDbNameCamel() {
+        return FieldUtil.underlineFilter(getDbName());
+    }
+
+    /**
+     * 干净的库名（移除下划线，横杠，点）并小写
+     * @return
+     */
+    public String getDbNameClean() {
+        return getDbName().replace("_", "")
+                .replace("-", "")
+                .replace(".", "").toLowerCase();
+    }
+
     public String getDatetime() {
         return localDateTime.format(DATE_TIME_FORMATTER);
     }

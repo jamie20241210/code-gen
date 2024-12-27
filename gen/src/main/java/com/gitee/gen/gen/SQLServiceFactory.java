@@ -1,34 +1,28 @@
 package com.gitee.gen.gen;
 
-import com.gitee.gen.gen.dm.DmService;
-import com.gitee.gen.gen.mysql.MySqlService;
-import com.gitee.gen.gen.oracle.OracleService;
-import com.gitee.gen.gen.postgresql.PostgreSqlService;
-import com.gitee.gen.gen.sqlserver.SqlServerService;
+import com.gitee.gen.config.ConnectConfig;
+import com.gitee.gen.config.DbTypeConfig;
+import org.noear.solon.core.util.ClassUtil;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SQLServiceFactory {
 
 
-    private static final Map<Integer, SQLService> SERVICE_CONFIG = new HashMap<>(16);
-
-    static {
-        SERVICE_CONFIG.put(DbType.MYSQL.getType(), new MySqlService());
-        SERVICE_CONFIG.put(DbType.ORACLE.getType(), new OracleService());
-        SERVICE_CONFIG.put(DbType.SQL_SERVER.getType(), new SqlServerService());
-        SERVICE_CONFIG.put(DbType.POSTGRE_SQL.getType(), new PostgreSqlService());
-        SERVICE_CONFIG.put(DbType.DM.getType(), new DmService());
-
-    }
+    private static final Map<Integer, SQLService> SERVICE_CONFIG = new ConcurrentHashMap<>(16);
 
     public static SQLService build(GeneratorConfig generatorConfig) {
-        SQLService service = SERVICE_CONFIG.get(generatorConfig.getDbType());
-        if (service == null) {
-            throw new RuntimeException("本系统暂不支持该数据源(" + generatorConfig.getDriverClass() + ")");
-        }
-        return service;
+        Integer dbType = generatorConfig.getDbType();
+        return SERVICE_CONFIG.computeIfAbsent(dbType, k -> {
+            ConnectConfig connectConfig = DbTypeConfig.getInstance().getConnectConfig(dbType);
+            String className = connectConfig.getServiceName();
+            Class<?> aClass = ClassUtil.loadClass(className);
+            if (aClass == null) {
+                throw new RuntimeException("找不到数据库服务类:" + className);
+            }
+            return ClassUtil.newInstance(aClass);
+        });
     }
 
 }

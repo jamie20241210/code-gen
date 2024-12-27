@@ -50,10 +50,13 @@ public class UpgradeService {
     @Inject
     private SystemConfigService systemConfigService;
 
-    @Inject("${gen.db1.driverClassName}")
+    @Inject("${dbms.enable:false}")
+    private boolean useDbms;
+
+    @Inject("${gen.db2.driverClassName}")
     private String driverClassName;
 
-    @Inject("${gen.db-name:gen}")
+    @Inject("${dbms.database:gen}")
     private String dbName;
 
     public void init() {
@@ -63,6 +66,10 @@ public class UpgradeService {
     }
 
     public void initDatabase() {
+        if (useDbms) {
+            log.info("使用DBMS，跳过sqlit3文件初始化");
+            return;
+        }
         File dbFile = getDbFile();
         if (!dbFile.exists()) {
             try {
@@ -212,12 +219,17 @@ public class UpgradeService {
      */
     public boolean addColumn(String tableName, String columnName, String type) {
         if (!isColumnExist(tableName, columnName)) {
-            if (isMysql()) {
-                upgradeMapper.addColumnMysql(tableName, columnName, type);
-            } else if (isDm()) {
-                upgradeMapper.addColumnDm(tableName, columnName, type);
-            } else {
-                upgradeMapper.addColumn(tableName, columnName, type);
+            try {
+                if (isMysql()) {
+                    upgradeMapper.addColumnMysql(tableName, columnName, type);
+                } else if (isDm()) {
+                    upgradeMapper.addColumnDm(tableName, columnName, type);
+                } else {
+                    upgradeMapper.addColumn(tableName, columnName, type);
+                }
+            } catch (Exception e) {
+                log.error("add column error, tableName={}, columnName={}, type={}",
+                        tableName, columnName, type, e);
             }
             return true;
         }
@@ -298,11 +310,11 @@ public class UpgradeService {
     }
 
     private boolean isMysql() {
-        return this.driverClassName.contains("mysql");
+        return useDbms && this.driverClassName.contains("mysql");
     }
 
     private boolean isDm() {
-        return this.driverClassName.contains("dm");
+        return useDbms && this.driverClassName.contains("dm");
     }
 
 }

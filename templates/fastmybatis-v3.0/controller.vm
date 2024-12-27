@@ -1,0 +1,98 @@
+## filename=${context.javaBeanName}Controller.java, folder=controller
+#set($entityClass="${context.classNamePascal}")
+#set($entityObj="${context.classNameCamel}")
+#set($serviceClass="${context.classNamePascal}Service")
+#set($serviceObj="${context.classNameCamel}Service")
+#set($pkg="${context.packageName}")
+package ${pkg}.web.controller;
+
+import com.gitee.fastmybatis.core.PageInfo;
+import com.gitee.fastmybatis.core.query.Query;
+import com.gitee.fastmybatis.core.query.param.PageParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import ${pkg}.dao.entity.${entityClass};
+import ${pkg}.service.${serviceClass}Service;
+
+import javax.validation.Valid;
+
+/**
+ * @author ${context.author}
+ */
+@RestController
+@RequestMapping("${table.tableName}")
+public class ${entityClass}Controller {
+
+    @Autowired
+    private ${serviceClass} ${serviceObj};
+
+    /**
+     * 分页查询
+     *
+     * @param param 请求参数
+     * @return 返回分页信息
+     */
+    @GetMapping("/page")
+    public Result<PageInfo<${entityClass}>> page(PageParam param) {
+        Query query = param.toQuery();
+        PageInfo<${entityClass}> pageInfo = ${serviceObj}.page(query);
+        return Result.ok(pageInfo);
+    }
+
+    /**
+     * 新增
+     *
+     * @param $entityObj
+     * @return 返回主键id
+     */
+    @PostMapping("/save")
+    public Result<${pk.javaTypeBox}> save(@Valid @RequestBody ${entityClass} $entityObj) {
+        ${serviceObj}.save($entityObj);
+        // 返回添加后的主键值
+        return Result.ok(${entityObj}.getId());
+    }
+
+    /**
+     * 详情
+     *
+     * @param id
+     * @return 返回详情
+     */
+    @GetMapping("/detail")
+    public Result<${entityClass}> detail(${pk.javaTypeBox} id) {
+    	${entityClass} record = ${serviceObj}.getById(id);
+        return Result.ok(record);
+    }
+
+    /**
+     * 修改
+     *
+     * @param $entityObj 表单数据
+     * @return
+     */
+    @PutMapping("/update")
+    public Result<?> update(@Valid @RequestBody ${entityClass} $entityObj) {
+        ${serviceObj}.update($entityObj);
+        return Result.ok();
+    }
+
+    /**
+     * 删除
+     *
+     * @param id 主键id
+     * @return
+     */
+    @DeleteMapping("/delete")
+    public Result<?> delete(${pk.javaTypeBox} id) {
+        ${serviceObj}.deleteById(id);
+        return Result.ok();
+    }
+
+}

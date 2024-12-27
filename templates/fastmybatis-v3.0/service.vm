@@ -1,0 +1,19 @@
+## filename=${context.javaBeanName}Service.java, folder=service
+#set($entityClass="${context.classNamePascal}")
+#set($mapperClass="${context.classNamePascal}Mapper")
+#set($pkg="${context.packageName}")
+package ${pkg}.mapper;
+
+import com.gitee.fastmybatis.core.support.BaseLambdaService;
+import ${pkg}.dao.entity.${entityClass};
+import ${pkg}.dao.mapper.${mapperClass};
+import org.springframework.stereotype.Service;
+
+
+/**
+ * @author ${context.author}
+ */
+@Service
+public class ${entityClass}Service extends BaseLambdaService<${entityClass}, ${mapperClass}> {
+
+}

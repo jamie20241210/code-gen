@@ -1,8 +1,11 @@
 package com.gitee.gen.gen;
 
 /**
+ * 改成配在app.yml中
+ *
  * @author tanghc
  */
+@Deprecated
 public enum DbType {
 
     MYSQL(1,
@@ -18,7 +21,7 @@ public enum DbType {
     SQL_SERVER(3,
             "SQL Server",
             "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-            "jdbc:sqlserver://%s:%s;DatabaseName=%s"),
+            "jdbc:sqlserver://%s:%s;DatabaseName=%s;trustServerCertificate=true"),
 
     POSTGRE_SQL(4,
             "PostgreSQL",

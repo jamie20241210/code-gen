@@ -4,26 +4,27 @@ server:
   port: 6969
 
 
-
 # sqlite3
 #LOCAL_DB: ${user.home}/gen.db
-DATASOURCE_URL: "jdbc:sqlite:"
-DATASOURCE_DRIVE: org.sqlite.JDBC
-DATASOURCE_USERNAME:
-DATASOURCE_PASSWORD:
+gen.db1:
+  url: "jdbc:sqlite:"
+  driverClassName: org.sqlite.JDBC
+  userName:
+  password:
 
 # mysql
-#DATASOURCE_URL: jdbc:mysql://localhost:3306/gen?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
-#DATASOURCE_DRIVE: com.mysql.cj.jdbc.Driver
-#DATASOURCE_USERNAME: root
-#DATASOURCE_PASSWORD: root
+dbms:
+  enable: false
+#  host: localhost:3306
+#  database: gen
+#  username: root
+#  password: root
 
-# 配置数据源
-gen.db1:
-  url: ${DATASOURCE_URL}
-  driverClassName: ${DATASOURCE_DRIVE}
-  userName: ${DATASOURCE_USERNAME}
-  password: ${DATASOURCE_PASSWORD}
+gen.db2:
+  url: jdbc:mysql://${dbms.host:localhost:3306}/${dbms.database:gen}?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=Asia/Shanghai
+  driverClassName: com.mysql.cj.jdbc.Driver
+  userName: ${dbms.username:gen}
+  password: ${dbms.password:}
 
 # 配置数据源对应的 mybatis 信息（要与 DataSource bean 的名字对上）
 mybatis.db1:
@@ -54,4 +55,34 @@ solon.logging.appender:
   cloud:
     level: INFO
     enable: false #是否启用
+
+
+# 2.0.3新增
+# 连接方式管理, {HOST},{PORT},{DB_NAME} 表示占位符
+connect:
+  1:
+    name: MySQL
+    driver: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://{HOST}:{PORT}/{DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    serviceName: com.gitee.gen.gen.mysql.MySqlService
+  2:
+    name: Oracle
+    driver: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@{HOST}:{PORT}{DB_NAME}
+    serviceName: com.gitee.gen.gen.oracle.OracleService
+  3:
+    name: "SQL Server"
+    driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://{HOST}:{PORT};DatabaseName={DB_NAME};trustServerCertificate=true
+    serviceName: com.gitee.gen.gen.sqlserver.SqlServerService
+  4:
+    name: PostgreSQL
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://{HOST}:{PORT}/{DB_NAME}
+    serviceName: com.gitee.gen.gen.postgresql.PostgreSqlService
+  5:
+    name: "达梦"
+    driver: dm.jdbc.driver.DmDriver
+    url: jdbc:dm://{HOST}:{PORT}/{DB_NAME}
+    serviceName: com.gitee.gen.gen.dm.DmService
 

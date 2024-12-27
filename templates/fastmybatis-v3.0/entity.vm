@@ -1,0 +1,58 @@
+## filename=${context.javaBeanName}.java, folder=entity
+#set($entityClass="${context.classNamePascal}")
+package ${context.packageName}.dao.entity;
+
+import com.gitee.fastmybatis.annotation.Pk;
+import com.gitee.fastmybatis.annotation.PkStrategy;
+import com.gitee.fastmybatis.annotation.Table;
+import com.gitee.fastmybatis.core.query.LambdaQuery;
+import lombok.Data;
+
+#if(${table.hasDateField})
+import java.util.Date;
+#end
+#if(${table.hasLocalDateField})
+import java.time.LocalDate;
+#end
+#if(${table.hasLocalDateTimeField})
+import java.time.LocalDateTime;
+#end
+#if(${table.hasBigDecimalField})
+import java.math.BigDecimal;
+#end
+
+/**
+ * 表名：${table.tableName}
+#if("$!{table.comment}" != "")
+ * 备注：${table.comment}
+#end
+ *
+ * @author ${context.author}
+ */
+@Table(name = "${table.tableName}", pk = @Pk(name = "${pk.columnName}", strategy = PkStrategy.INCREMENT))
+@Data
+public class ${entityClass} {
+
+#foreach($column in $columns)
+#if("$!{column.comment}" != "")
+    /** 
+     * ${column.comment}
+     */
+#end
+#if(${column.columnName} == "is_deleted")
+    @com.gitee.fastmybatis.annotation.Column(logicDelete = true)
+#end
+    private ${column.javaTypeBox} ${column.javaFieldName};
+
+#end
+    
+    /**
+     * 创建LambdaQuery对象
+     * 
+     * @return 返回LambdaQuery对象
+     */
+    public static LambdaQuery<${entityClass}> query() {
+        return new LambdaQuery<>(${entityClass}.class);
+    }
+
+}

@@ -1,6 +1,9 @@
 package com.gitee.gen.gen;
 
+import com.gitee.gen.config.ConnectConfig;
+import com.gitee.gen.config.DbTypeConfig;
 import com.gitee.gen.entity.DatasourceConfig;
+import org.noear.snack.core.utils.StringUtil;
 
 
 public class GeneratorConfig {
@@ -10,6 +13,10 @@ public class GeneratorConfig {
     private String dbName;
     /** schema(PGSQL专用) */
     private String schemaName;
+    /**
+     * 驱动class
+     */
+    private String driverClass;
     /** 数据库host */
     private String host;
     /** 数据库端口 */
@@ -18,6 +25,7 @@ public class GeneratorConfig {
     private String username;
     /** 数据库密码 */
     private String password;
+
 
     public static GeneratorConfig build(DatasourceConfig datasourceConfig) {
         GeneratorConfig generatorConfig = new GeneratorConfig();
@@ -28,24 +36,26 @@ public class GeneratorConfig {
         generatorConfig.setUsername(datasourceConfig.getUsername());
         generatorConfig.setPassword(datasourceConfig.getPassword());
         generatorConfig.setSchemaName(datasourceConfig.getSchemaName());
+        String driver = datasourceConfig.getDriverClass();
+        if (StringUtil.isEmpty(driver)) {
+            ConnectConfig connectConfig = DbTypeConfig.getInstance().getConnectConfig(datasourceConfig.getDbType());
+            driver = connectConfig.getDriver();
+        }
+        generatorConfig.setDriverClass(driver);
         return generatorConfig;
     }
 
-    public String getDriverClass() {
-        DbType dbType = DbType.of(this.dbType);
-        if (dbType == null) {
-            throw new RuntimeException("不支持数据库类型" + this.dbType + "，请在DbType.java中配置");
-        }
-        return dbType.getDriverClass();
-    }
-
     public String getJdbcUrl() {
-        DbType dbType = DbType.of(this.dbType);
+        ConnectConfig connectConfig = DbTypeConfig.getInstance().getConnectConfig(dbType);
         if (dbType == null) {
-            throw new RuntimeException("不支持数据库类型" + this.dbType + "，请在DbType.java中配置");
+            throw new RuntimeException("不支持数据库类型" + this.dbType + "，请在 app.yml 中配置");
         }
-        String jdbcUrl = dbType.getJdbcUrl();
-        return String.format(jdbcUrl, host, port, dbName);
+        String jdbcUrl = connectConfig.getUrl();
+        // jdbc:mysql://{HOST}:{PORT}/{DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+        jdbcUrl = jdbcUrl.replace("{HOST}", host);
+        jdbcUrl = jdbcUrl.replace("{PORT}", String.valueOf(port));
+        jdbcUrl = jdbcUrl.replace("{DB_NAME}", dbName);
+        return jdbcUrl;
     }
 
     public String getDbName() {
@@ -62,6 +72,10 @@ public class GeneratorConfig {
 
     public void setDbType(Integer dbType) {
         this.dbType = dbType;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
     }
 
     public String getHost() {
@@ -102,5 +116,13 @@ public class GeneratorConfig {
 
     public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
+    }
+
+    public void setDriverClass(String driverClass) {
+        this.driverClass = driverClass;
+    }
+
+    public String getDriverClass() {
+        return driverClass;
     }
 }

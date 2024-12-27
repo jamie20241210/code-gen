@@ -10,7 +10,6 @@ public class DatasourceConfig {
     private Integer id;
     /**
      * 数据库类型
-     * @see com.gitee.gen.gen.DbType
      */
     private Integer dbType;
     /** 数据库驱动 */

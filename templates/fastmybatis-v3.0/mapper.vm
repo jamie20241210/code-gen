@@ -1,0 +1,14 @@
+## filename=${context.javaBeanName}Mapper.java, folder=mapper
+#set($entityClass="${context.classNamePascal}")
+#set($pkg="${context.packageName}")
+package ${pkg}.dao.mapper;
+
+import com.gitee.fastmybatis.core.mapper.BaseMapper;
+import ${pkg}.dao.entity.${entityClass};
+
+/**
+ * @author ${context.author}
+ */
+public interface ${entityClass}Mapper extends BaseMapper<${entityClass}> {
+	
+}

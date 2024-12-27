@@ -1,5 +1,58 @@
 # changelog
 
+## 2.0.5
+
+- 新增`${table.columnCount}`变量,返回表字段数量
+
+## 2.0.4
+
+- 使用jdkhttp
+
+## 2.0.3
+
+- 连接方式管理放在配置文件中
+- solon更新到2.8.5
+
+
+```yaml
+# 连接方式管理, {HOST},{PORT},{DB_NAME} 表示占位符
+connect:
+  "1":
+    name: MySQL
+    driver: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://{HOST}:{PORT}/{DB_NAME}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    serviceName: com.gitee.gen.gen.mysql.MySqlService
+  "2":
+    name: Oracle
+    driver: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@{HOST}:{PORT}{DB_NAME}
+    serviceName: com.gitee.gen.gen.oracle.OracleService
+  "3":
+    name: "SQL Server"
+    driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://{HOST}:{PORT};DatabaseName={DB_NAME};trustServerCertificate=true
+    serviceName: com.gitee.gen.gen.sqlserver.SqlServerService
+  "4":
+    name: PostgreSQL
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://{HOST}:{PORT}/{DB_NAME}
+    serviceName: com.gitee.gen.gen.postgresql.PostgreSqlService
+  "5":
+    name: "达梦"
+    driver: dm.jdbc.driver.DmDriver
+    url: jdbc:dm://{HOST}:{PORT}/{DB_NAME}
+    serviceName: com.gitee.gen.gen.dm.DmService
+```
+
+## 2.0.2
+
+- 支持其它数据库代码生成，具体参考项目首页说明
+
+## 2.0.1
+
+- 新增`${context.dbNameCamel}` 数据库名驼峰，如：shopOrder
+- 新增`${context.dbNameClean}` 数据库名驼峰，如：shoporder
+
 ## 2.0.0
 
 - 【新增】底层框架改为solon，启动更快，内存更小（64M）

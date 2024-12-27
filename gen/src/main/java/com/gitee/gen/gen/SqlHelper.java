@@ -1,6 +1,10 @@
 package com.gitee.gen.gen;
 
-import org.apache.ibatis.datasource.pooled.PooledDataSourceFactory;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.apache.ibatis.jdbc.SqlRunner;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.Environment;
@@ -12,14 +16,6 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * 执行SQL语句的帮助类
  *
@@ -27,14 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SqlHelper {
     private static final Logger logger = LoggerFactory.getLogger(SqlHelper.class);
-
-    private static final String DRIVER = "driver";
-    private static final String URL = "url";
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
-
-    private static final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>(16);
-    private static final ThreadLocal<Connection> connectionLocal = new ThreadLocal<>();
 
     /**
      * <pre>
@@ -63,7 +51,7 @@ public class SqlHelper {
         DataSource dataSource = DataSourceManager.getDataSource(generatorConfig);
         String runSql = buildSqlWithParams(dataSource, sql, params);
         String[] sqls = runSql.split(";");
-        Connection conn = null;
+        Connection conn;
         try {
             conn = DataSourceManager.getConnection(generatorConfig);
             SqlRunner runner = buildSqlRunner(conn);
@@ -82,34 +70,14 @@ public class SqlHelper {
         }
     }
 
-
-    public static Connection getConnection(GeneratorConfig generatorConfig) {
-        Connection connection = connectionLocal.get();
-        if (connection == null) {
-            try {
-                connection = getDataSource(generatorConfig).getConnection();
-                connectionLocal.set(connection);
-            } catch (SQLException e) {
-                logger.error("获取Connection失败, jdbcUrl:{}", generatorConfig.getJdbcUrl(), e);
-                throw new RuntimeException("获取Connection失败", e);
-            }
-        }
-        return connection;
-    }
-
-    public static void closeConnection() {
-        Connection connection = connectionLocal.get();
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        connectionLocal.remove();
-    }
-
-    // 参数绑定
+    /**
+     * 参数绑定
+     *
+     * @param dataSource 数据源
+     * @param sql        sql模板
+     * @param params     参数
+     * @return 构建好的耍起莱
+     */
     private static String buildSqlWithParams(DataSource dataSource, String sql, Map<String, Object> params) {
         Configuration configuration = buildConfiguration(dataSource);
         TextSqlNode node = new TextSqlNode(sql);
@@ -124,21 +92,6 @@ public class SqlHelper {
 
     private static SqlRunner buildSqlRunner(Connection connection) {
         return new SqlRunner(connection);
-    }
-
-
-    private static DataSource getDataSource(GeneratorConfig generatorConfig) {
-        String jdbcUrl = generatorConfig.getJdbcUrl();
-        return dataSourceMap.computeIfAbsent(jdbcUrl, key -> {
-            Properties properties = new Properties();
-            properties.setProperty(DRIVER, generatorConfig.getDriverClass());
-            properties.setProperty(URL, jdbcUrl);
-            properties.setProperty(USERNAME, generatorConfig.getUsername());
-            properties.setProperty(PASSWORD, generatorConfig.getPassword());
-            PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
-            pooledDataSourceFactory.setProperties(properties);
-            return pooledDataSourceFactory.getDataSource();
-        });
     }
 
     private static Configuration buildConfiguration(DataSource dataSource) {

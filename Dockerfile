@@ -11,4 +11,8 @@ ADD dist/gen /gen/
 
 # set jvm
 ENV JAVA_OPTS="-server -Xmx64m -Xms64m"
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Dsolon.config.add=/gen/conf/app.yml -Duser.timezone=Asia/Shanghai -Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -jar /gen/gen.jar" ]
+ENV LOCAL_DB_PATH="/opt/gen/gen.db"
+ENV CONFIG_FILE="/gen/conf/app.yml"
+ENV GEN_EXT_PATH="/gen/ext"
+
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -DLOCAL_DB=$LOCAL_DB_PATH -Djava.ext.dirs=$JAVA_HOME/lib/ext:$GEN_EXT_PATH -Dsolon.config.add=$CONFIG_FILE -Duser.timezone=Asia/Shanghai -Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -jar /gen/gen.jar" ]

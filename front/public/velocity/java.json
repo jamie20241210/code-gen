@@ -80,7 +80,15 @@
         },
         {
           "expression": "${context.dbName}",
-          "text": "数据库名"
+          "text": "数据库名，如：shop_order"
+        },
+        {
+          "expression": "${context.dbNameCamel}",
+          "text": "数据库名驼峰，如：shopOrder"
+        },
+        {
+          "expression": "${context.dbNameClean}",
+          "text": "数据库名，无符号并小写，如：shoporder"
         },
         {
           "expression": "${context.packageName}",
@@ -159,6 +167,10 @@
         {
           "expression": "${table.schema}",
           "text": "PostgreSQL中的Schema"
+        },
+        {
+          "expression": "${table.columnCount}",
+          "text": "字段数量"
         }
       ]
     },

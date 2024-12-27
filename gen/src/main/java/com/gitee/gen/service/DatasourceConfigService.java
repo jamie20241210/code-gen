@@ -1,7 +1,8 @@
 package com.gitee.gen.service;
 
+import com.gitee.gen.config.ConnectConfig;
+import com.gitee.gen.config.DbTypeConfig;
 import com.gitee.gen.entity.DatasourceConfig;
-import com.gitee.gen.gen.DbType;
 import com.gitee.gen.mapper.DatasourceConfigMapper;
 import org.apache.ibatis.solon.annotation.Db;
 import org.noear.solon.annotation.Component;
@@ -27,9 +28,9 @@ public class DatasourceConfigService {
 
     public void insert(DatasourceConfig templateConfig) {
         templateConfig.setIsDeleted(0);
-        DbType dbType = DbType.of(templateConfig.getDbType());
-        if (dbType != null) {
-            templateConfig.setDriverClass(dbType.getDriverClass());
+        ConnectConfig connectConfig = DbTypeConfig.getInstance().getConnectConfig(templateConfig.getDbType());
+        if (connectConfig != null) {
+            templateConfig.setDriverClass(connectConfig.getDriver());
         }
         datasourceConfigMapper.insert(templateConfig);
     }

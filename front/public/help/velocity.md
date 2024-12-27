@@ -38,11 +38,12 @@ My name is ${name}
 ```html
 #foreach($item in $list)
  $item
- $velocityCount 
+ ${foreach.index}
 #end
 ```
 
-其中，`$item`代表遍历的每一项，`$velocityCount`表示当前循环次数的计数器，从1开始
+其中，`$item`代表遍历的每一项，`${foreach.index}`表示当前循环次数的计数器，从0开始
+
 
 for循环跳出`#break`
 

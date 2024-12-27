@@ -40,6 +40,7 @@ public class DBConnect {
                     con.close(); // 关闭连接,该连接无实际用处
                 } catch (SQLException e) {
                     e.printStackTrace();
+                    ret = e.getMessage();
                 }
             }
         }

@@ -2,9 +2,9 @@ package com.gitee.gen.controller;
 
 import com.gitee.gen.common.Action;
 import com.gitee.gen.common.Result;
+import com.gitee.gen.config.DbTypeConfig;
 import com.gitee.gen.entity.DatasourceConfig;
 import com.gitee.gen.gen.DBConnect;
-import com.gitee.gen.gen.DbType;
 import com.gitee.gen.gen.GeneratorConfig;
 import com.gitee.gen.gen.SQLService;
 import com.gitee.gen.gen.SQLServiceFactory;
@@ -17,7 +17,6 @@ import org.noear.solon.annotation.Path;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author tanghc
@@ -74,8 +73,11 @@ public class DatasourceConfigController {
 
     @Mapping("/dbtype")
     public Result dbType(DatasourceConfig datasourceConfig) {
-        List<DbTypeShow> dbTypeShowList = Stream.of(DbType.values())
-                .map(dbType -> new DbTypeShow(dbType.getDisplayName(), dbType.getType()))
+        List<DbTypeShow> dbTypeShowList = DbTypeConfig.getInstance()
+                .getConnectConfigMap()
+                .entrySet()
+                .stream()
+                .map(entry -> new DbTypeShow(entry.getValue().getName(), entry.getKey()))
                 .collect(Collectors.toList());
         return Action.ok(dbTypeShowList);
     }

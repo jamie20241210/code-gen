@@ -40,6 +40,15 @@ public class TableDefinition {
     }
 
     /**
+     * 返回字段数量
+     *
+     * @return 字段数量,>=0
+     */
+    public int getColumnCount() {
+        return columnDefinitions.size();
+    }
+
+    /**
      * 是否有时间字段
      * @return true：有
      */
