@@ -28,12 +28,12 @@ public class PostgreSqlTableSelector extends TableSelector {
                     "FROM " +
                     " pg_tables t LEFT JOIN  " +
                     " ( " +
-                    " SELECT relname as tablename, obj_description(oid) AS cmt " +
-                    " FROM pg_class C " +
-                    " WHERE relkind='r' AND relname NOT LIKE 'pg_%%' AND relname NOT LIKE 'sql_%%' AND relchecks=0  " +
+                    " SELECT C.relname as tablename, obj_description(C.oid) as cmt, n.nspname as schemaname " +
+                    " FROM pg_class C join pg_namespace n on n.oid = C.relnamespace " +
+                    " WHERE C.relkind='r' AND C.relname NOT LIKE 'pg_%%' AND C.relname NOT LIKE 'sql_%%' AND C.relchecks=0  " +
                     " ORDER BY relname  " +
-                    ") t2 ON t.tablename = t2.tablename " +
-                    "WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema' %s %s";
+                    ") t2 ON t.tablename = t2.tablename and t.schemaname = t2.schemaname " +
+                    "WHERE t.schemaname != 'pg_catalog' AND t.schemaname != 'information_schema' %s %s";
 
     @Override
     protected String getShowTablesSQL(GeneratorConfig generatorConfig) {
@@ -42,7 +42,7 @@ public class PostgreSqlTableSelector extends TableSelector {
             schema = "";
         }
         if (StringUtils.isNotBlank(schema)) {
-            schema = String.format("AND schemaname = '%s'", schema);
+            schema = String.format("AND t.schemaname = '%s'", schema);
         }
         List<String> tableNames = wrapTableNames();
         String and = "";
